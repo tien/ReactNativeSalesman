@@ -1,12 +1,7 @@
 import gmap from "@google/maps";
 import React, { useEffect, useState } from "react";
-import {
-  GeolocationReturnType,
-  StyleSheet,
-  Text,
-  TouchableOpacity,
-  View
-} from "react-native";
+import { GeolocationReturnType, StyleSheet, Text, TouchableOpacity, View } from "react-native";
+import Config from "react-native-config";
 import MapView from "react-native-maps";
 import { Subject } from "rxjs";
 import { debounceTime } from "rxjs/operators";
@@ -18,7 +13,7 @@ import { ILocation, mainContext, Route } from "./src/contexts";
 export default function App() {
   const [gmapClient] = useState(
     gmap.createClient({
-      key: "AIzaSyB_AFYNJqUG3hRUp0qH-t8YOw4TWYMhUiI",
+      key: Config.GOOGLE_MAPS_API_KEY,
       Promise
     })
   );
@@ -76,7 +71,9 @@ export default function App() {
     }
   }, [debouncedSearch]);
 
-  return initialLocation ? (
+  return initialLocation === undefined ? (
+    <Text>Loading...</Text>
+  ) : (
     <mainContext.Provider
       value={{ locations, addLocation, removeLocation, currentRoute, setRoute }}
     >
@@ -134,8 +131,6 @@ export default function App() {
         />
       </View>
     </mainContext.Provider>
-  ) : (
-    <Text>Loading...</Text>
   );
 }
 

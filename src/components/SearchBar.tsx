@@ -31,7 +31,7 @@ export function SearchBar({
           <SearchIcon width={15} height={15} preserveAspectRatio="true" />
         )}
       </View>
-      <TextInput {...textInputProps} />
+      <TextInput style={style.textInput} {...textInputProps} />
     </View>
   );
 }
@@ -51,5 +51,8 @@ const style = StyleSheet.create({
   },
   iconWrapper: {
     paddingHorizontal: 10
+  },
+  textInput: {
+    flex: 1
   }
 });

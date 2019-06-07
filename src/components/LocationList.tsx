@@ -77,7 +77,6 @@ const style = StyleSheet.create({
   entry: {
     backgroundColor: "white",
     paddingHorizontal: 15,
-    paddingVertical: 5,
     borderColor: "#777877",
     borderWidth: 1
   },
