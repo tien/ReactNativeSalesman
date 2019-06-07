@@ -1,4 +1,4 @@
-import React, { useContext } from "react";
+import React from "react";
 import {
   StyleSheet,
   TextInput,
@@ -9,23 +9,29 @@ import {
 
 import BackIcon from "../assets/svg/back.svg";
 import SearchIcon from "../assets/svg/magnifying-glass.svg";
-import { mainContext, Route } from "../contexts";
 
-export function SearchBar(props: TextInputProps) {
-  const value = useContext(mainContext);
+export interface ISearchBoxProps extends TextInputProps {
+  showBackButton?: boolean;
+  onBackButtonPress?: () => void;
+}
 
+export function SearchBar({
+  showBackButton = false,
+  onBackButtonPress,
+  ...textInputProps
+}: ISearchBoxProps) {
   return (
     <View style={style.searchBarContainer}>
       <View style={style.iconWrapper}>
-        {value.currentRoute !== Route.SEARCH ? (
-          <SearchIcon width={15} height={15} preserveAspectRatio="true" />
-        ) : (
-          <TouchableOpacity onPress={() => value.setRoute(Route.HOME)}>
+        {showBackButton ? (
+          <TouchableOpacity onPress={onBackButtonPress}>
             <BackIcon width={15} height={15} preserveAspectRatio="true" />
           </TouchableOpacity>
+        ) : (
+          <SearchIcon width={15} height={15} preserveAspectRatio="true" />
         )}
       </View>
-      <TextInput {...props} />
+      <TextInput {...textInputProps} />
     </View>
   );
 }

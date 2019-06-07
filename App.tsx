@@ -98,6 +98,8 @@ export default function App() {
         }}
         onFocus={() => setRoute(Route.SEARCH)}
         onBlur={() => setRoute(Route.HOME)}
+        showBackButton={currentRoute === Route.SEARCH}
+        onBackButtonPress={() => setRoute(Route.HOME)}
       />
       <View style={style.locationListWrapper}>
         <View style={style.locationList}>
