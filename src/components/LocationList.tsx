@@ -1,5 +1,5 @@
 import React, { useContext } from "react";
-import { Text, TouchableOpacity, View, StyleSheet } from "react-native";
+import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import Swipeout from "react-native-swipeout";
 
 import { ILocation, mainContext } from "../contexts";
@@ -12,43 +12,63 @@ export enum LocationListMode {
 export interface ILocationListProps {
   mode: LocationListMode;
   locations?: ILocation[];
+  addLocation: (location: ILocation) => void;
+  removeLocation: (location: ILocation) => void;
 }
 
-export function LocationList({ mode, locations = [] }: ILocationListProps) {
-  const context = useContext(mainContext);
-  const buttons = [
-    {
-      text: "-",
-      color: "white",
-      backgroundColor: "red"
-    }
-  ];
+export function LocationList({
+  mode,
+  locations = [],
+  addLocation,
+  removeLocation
+}: ILocationListProps) {
+  const value = useContext(mainContext);
 
   return (
     <View>
-      {locations.map((location, index) => (
-        <Swipeout
-          key={index}
-          disabled={mode === LocationListMode.ADD}
-          left={buttons}
-          style={style.entry}
-        >
-          <View style={{ flexDirection: "row", alignItems: "center" }}>
-            {mode === LocationListMode.ADD && (
-              <TouchableOpacity
-                style={style.addButton}
-                onPress={() => context.addLocation(location)}
-              >
-                <Text style={style.addButtonText} adjustsFontSizeToFit>+</Text>
-              </TouchableOpacity>
-            )}
-            <View>
-              <Text style={style.name}>{location.name}</Text>
-              <Text style={style.secondaryName}>{location.region}</Text>
+      {locations.map((location, index) => {
+        const locationAlreadyAdded =
+          value.locations.find(
+            savedLocation => savedLocation.placeId === location.placeId
+          ) !== undefined;
+
+        return (
+          <Swipeout
+            key={index}
+            disabled={mode === LocationListMode.ADD}
+            left={[
+              {
+                text: "-",
+                color: "white",
+                backgroundColor: "red",
+                onPress: () => removeLocation(location)
+              }
+            ]}
+            style={style.entry}
+          >
+            <View style={{ flexDirection: "row", alignItems: "center" }}>
+              {mode === LocationListMode.ADD && (
+                <TouchableOpacity
+                  style={{
+                    ...style.addButton,
+                    ...(locationAlreadyAdded ? { backgroundColor: "green" } : {})
+                  }}
+                  onPress={() => addLocation(location)}
+                  disabled={locationAlreadyAdded}
+                >
+                  <Text style={style.addButtonText} adjustsFontSizeToFit>
+                    {locationAlreadyAdded ? "\u2713" : "+"}
+                  </Text>
+                </TouchableOpacity>
+              )}
+              <View>
+                <Text style={style.name}>{location.name}</Text>
+                <Text style={style.secondaryName}>{location.region}</Text>
+              </View>
             </View>
-          </View>
-        </Swipeout>
-      ))}
+          </Swipeout>
+        );
+      })}
     </View>
   );
 }

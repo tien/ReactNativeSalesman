@@ -9,13 +9,30 @@ export interface ILocation {
 }
 
 interface IMainContext {
+  currentRoute: Route;
+  setRoute: (route: Route) => void;
   addLocation: (location: ILocation) => void;
+  removeLocation: (location: ILocation) => void;
   locations: ILocation[];
 }
 
+export enum Route {
+  HOME,
+  SEARCH,
+  LOCATE,
+  DIRECTION
+}
+
 const mainContextDefault: IMainContext = {
+  currentRoute: Route.HOME,
+  setRoute(route: Route) {
+    return;
+  },
   addLocation(location: ILocation) {
-    this.locations = [...this.locations, location];
+    return;
+  },
+  removeLocation(location: ILocation) {
+    return;
   },
   locations: []
 };
