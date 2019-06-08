@@ -1,8 +1,8 @@
 import React, { useContext } from "react";
-import { StyleSheet, Text, TouchableOpacity, View, ScrollView } from "react-native";
+import { ScrollView, StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import Swipeout from "react-native-swipeout";
 
-import { ILocation, mainContext } from "../contexts";
+import { ILocation } from "../contexts";
 
 export enum LocationListMode {
   ADD,
@@ -12,6 +12,7 @@ export enum LocationListMode {
 export interface ILocationListProps {
   mode: LocationListMode;
   locations?: ILocation[];
+  alreadyAdded?: (location: ILocation) => boolean;
   addLocation: (location: ILocation) => void;
   removeLocation: (location: ILocation) => void;
 }
@@ -19,18 +20,14 @@ export interface ILocationListProps {
 export function LocationList({
   mode,
   locations = [],
+  alreadyAdded = () => false,
   addLocation,
   removeLocation
 }: ILocationListProps) {
-  const value = useContext(mainContext);
-
   return (
     <ScrollView style={style.container}>
       {locations.map((location, index) => {
-        const locationAlreadyAdded =
-          value.locations.find(
-            savedLocation => savedLocation.placeId === location.placeId
-          ) !== undefined;
+        const locationAlreadyAdded = alreadyAdded(location);
 
         return (
           <Swipeout
