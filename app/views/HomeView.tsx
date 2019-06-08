@@ -66,7 +66,7 @@ export function HomeView() {
   return initialLocation === undefined ? (
     <Text>Loading...</Text>
   ) : (
-    <View style={style.viewContainer}>
+    <View pointerEvents="box-none" style={style.viewContainer}>
       <View style={style.searchBarContainer}>
         <SearchBar
           placeholder="Search here"

@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { GeolocationReturnType, StyleSheet, Text, View } from "react-native";
+import { GeolocationReturnType, StyleSheet, Text, View, Dimensions } from "react-native";
 import MapView from "react-native-maps";
 
 import {
@@ -13,8 +13,15 @@ import {
 import { HomeView } from "./app/views/HomeView";
 import { LocateView } from "./app/views/LocateView";
 
+const { width, height } = Dimensions.get("window");
+
+const ASPECT_RATIO = width / height;
+const LATITUDE_DELTA = 0.0922;
+const LONGITUDE_DELTA = LATITUDE_DELTA * ASPECT_RATIO;
+
 export default function App() {
   const [initialLocation, setInitialLocation] = useState<GeolocationReturnType>();
+  const [currentLocation, setCurrentLocation] = useState<GeolocationReturnType>();
   const [locations, setLocations] = useState<ILocation[]>([]);
   const [currentRoute, setRoute] = useState(Route.HOME);
 
@@ -28,6 +35,14 @@ export default function App() {
     navigator.geolocation.getCurrentPosition(position => setInitialLocation(position));
   }, []);
 
+  useEffect(() => {
+    const watchId = navigator.geolocation.watchPosition(position =>
+      setCurrentLocation(position)
+    );
+
+    return () => navigator.geolocation.clearWatch(watchId);
+  }, []);
+
   const navigationContextValue: INavigationContext = {
     currentRoute,
     goToRoute: setRoute
@@ -35,6 +50,7 @@ export default function App() {
 
   const locationContextValue: ILocationContext = {
     initialLocation,
+    currentLocation,
     locations,
     addLocation,
     removeLocation
@@ -51,16 +67,22 @@ export default function App() {
               style={style.map}
               initialRegion={{
                 latitude: initialLocation.coords.latitude,
-                latitudeDelta: 0.0922,
+                latitudeDelta: LATITUDE_DELTA,
                 longitude: initialLocation.coords.longitude,
-                longitudeDelta: 0.0421
+                longitudeDelta: LONGITUDE_DELTA
               }}
             />
             <View pointerEvents="box-none" style={style.mapOverlay}>
-              {(currentRoute === Route.HOME || currentRoute === Route.SEARCH) && (
-                <HomeView />
-              )}
-              {currentRoute === Route.LOCATE && <LocateView />}
+              {(() => {
+                switch (currentRoute) {
+                  case Route.LOCATE:
+                    return <LocateView />;
+                  case Route.HOME:
+                  case Route.SEARCH:
+                  default:
+                    return <HomeView />;
+                }
+              })()}
             </View>
           </>
         )}
