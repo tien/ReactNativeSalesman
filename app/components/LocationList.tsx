@@ -1,4 +1,4 @@
-import React, { useContext } from "react";
+import React, { useContext, useState } from "react";
 import { ScrollView, StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import Swipeout from "react-native-swipeout";
 
@@ -24,14 +24,18 @@ export function LocationList({
   addLocation,
   removeLocation
 }: ILocationListProps) {
+  const [scrollEnabled, setScrollEnabled] = useState(true);
+
   return (
-    <ScrollView style={style.container}>
+    <ScrollView style={style.container} scrollEnabled={scrollEnabled}>
       {locations.map((location, index) => {
         const locationAlreadyAdded = alreadyAdded(location);
 
         return (
           <Swipeout
             key={index}
+            style={style.entry}
+            scroll={setScrollEnabled}
             disabled={mode === LocationListMode.ADD}
             left={[
               {
@@ -41,7 +45,6 @@ export function LocationList({
                 onPress: () => removeLocation(location)
               }
             ]}
-            style={style.entry}
           >
             <View style={{ flexDirection: "row", alignItems: "center" }}>
               {mode === LocationListMode.ADD && (
