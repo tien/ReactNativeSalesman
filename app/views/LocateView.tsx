@@ -1,7 +1,6 @@
-import gmap from "@google/maps";
 import React, { useContext, useEffect } from "react";
 import { StyleSheet, Text, View } from "react-native";
-import Config from "react-native-config";
+import MapView from "react-native-maps";
 
 import MapMarkerIcon from "../assets/svg/map-marker.svg";
 import { Button } from "../components/Button";
@@ -12,16 +11,16 @@ import { gmapClient } from "../services/googleMap";
 export function LocateView() {
   const { goToRoute } = useContext(NavigationContext);
   const { addLocation } = useContext(LocationContext);
-  const { region, setRegion } = useContext(MapContext);
+  const { map, region } = useContext(MapContext);
 
   useEffect(() => {
-    navigator.geolocation.getCurrentPosition(position => {
-      setRegion({
+    navigator.geolocation.getCurrentPosition(position =>
+      (map as MapView).animateToRegion({
         ...region!,
         latitude: position.coords.latitude,
         longitude: position.coords.longitude
-      });
-    });
+      })
+    );
   }, []);
 
   const confirmLocation = () => {

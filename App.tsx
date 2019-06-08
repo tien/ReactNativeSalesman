@@ -23,6 +23,7 @@ const LONGITUDE_DELTA = LATITUDE_DELTA * ASPECT_RATIO;
 
 export default function App() {
   const [locations, setLocations] = useState<ILocation[]>([]);
+  const [map, setMap] = useState<MapView | null>(null);
   const [region, setRegion] = useState<Region>();
   const [currentRoute, setRoute] = useState(Route.HOME);
 
@@ -55,6 +56,7 @@ export default function App() {
   };
 
   const mapContextValue: IMapContext = {
+    map,
     region,
     setRegion
   };
@@ -68,9 +70,10 @@ export default function App() {
               <Text>Loading...</Text>
             ) : (
               <MapView
+                ref={component => setMap(component)}
                 style={style.map}
-                region={region}
-                onRegionChangeComplete={setRegion}
+                initialRegion={region}
+                onRegionChange={setRegion}
               />
             )}
             <View pointerEvents="box-none" style={style.mapOverlay}>
