@@ -1,7 +1,5 @@
-import gmap from "@google/maps";
 import React, { useContext, useEffect, useState } from "react";
 import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
-import Config from "react-native-config";
 import { Subject } from "rxjs";
 import { debounceTime } from "rxjs/operators";
 
@@ -56,7 +54,9 @@ export function HomeView() {
                 return {
                   placeId: value.place_id,
                   name,
-                  secondaryName
+                  secondaryName,
+                  latitude: value.geometry.location.lat,
+                  longitude: value.geometry.location.lng
                 };
               })
             )
@@ -94,7 +94,10 @@ export function HomeView() {
         </View>
         <View style={style.locationList}>
           <Text style={style.destinationLabel}>Destinations</Text>
-          <TouchableOpacity style={style.directionsButton}>
+          <TouchableOpacity
+            style={style.directionsButton}
+            onPress={() => goToRoute(Route.DIRECTION)}
+          >
             <Text style={style.directionsButtonText}>DIRECTIONS</Text>
           </TouchableOpacity>
         </View>

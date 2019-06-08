@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { Dimensions, StyleSheet, Text, View } from "react-native";
-import MapView, { Callout, Marker, Region } from "react-native-maps";
+import MapView, { Region } from "react-native-maps";
 
 import {
   ILocation,
@@ -11,6 +11,7 @@ import {
   Route
 } from "./app/contexts";
 import { IMapContext, MapContext } from "./app/contexts/mapContext";
+import { DirectionView } from "./app/views/DirectionView";
 import { HomeView } from "./app/views/HomeView";
 import { LocateView } from "./app/views/LocateView";
 
@@ -77,6 +78,8 @@ export default function App() {
                 switch (currentRoute) {
                   case Route.LOCATE:
                     return <LocateView />;
+                  case Route.DIRECTION:
+                    return <DirectionView />;
                   case Route.HOME:
                   case Route.SEARCH:
                   default:

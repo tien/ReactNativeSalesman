@@ -5,8 +5,8 @@ export interface ILocation {
   placeId: string;
   name: string;
   secondaryName: string;
-  latitude?: number;
-  longitude?: number;
+  latitude: number;
+  longitude: number;
 }
 
 export interface ILocationContext {
