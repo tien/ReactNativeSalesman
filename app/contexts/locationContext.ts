@@ -4,13 +4,12 @@ import { GeolocationReturnType } from "react-native";
 export interface ILocation {
   placeId: string;
   name: string;
-  region: string;
+  secondaryName: string;
   latitude?: number;
   longitude?: number;
 }
 
 export interface ILocationContext {
-  currentLocation?: GeolocationReturnType;
   locations: ILocation[];
   addLocation: (location: ILocation) => void;
   removeLocation: (location: ILocation) => void;

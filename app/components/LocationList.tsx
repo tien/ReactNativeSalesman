@@ -60,7 +60,7 @@ export function LocationList({
               )}
               <View>
                 <Text style={style.name}>{location.name}</Text>
-                <Text style={style.secondaryName}>{location.region}</Text>
+                <Text style={style.secondaryName}>{location.secondaryName}</Text>
               </View>
             </View>
           </Swipeout>

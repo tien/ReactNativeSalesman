@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
-import { Dimensions, GeolocationReturnType, StyleSheet, Text, View } from "react-native";
-import MapView, { Region } from "react-native-maps";
+import { Dimensions, StyleSheet, Text, View } from "react-native";
+import MapView, { Callout, Marker, Region } from "react-native-maps";
 
 import {
   ILocation,
@@ -21,7 +21,6 @@ const LATITUDE_DELTA = 0.0922;
 const LONGITUDE_DELTA = LATITUDE_DELTA * ASPECT_RATIO;
 
 export default function App() {
-  const [currentLocation, setCurrentLocation] = useState<GeolocationReturnType>();
   const [locations, setLocations] = useState<ILocation[]>([]);
   const [region, setRegion] = useState<Region>();
   const [currentRoute, setRoute] = useState(Route.HOME);
@@ -43,21 +42,12 @@ export default function App() {
     );
   }, []);
 
-  useEffect(() => {
-    const watchId = navigator.geolocation.watchPosition(position =>
-      setCurrentLocation(position)
-    );
-
-    return () => navigator.geolocation.clearWatch(watchId);
-  }, []);
-
   const navigationContextValue: INavigationContext = {
     currentRoute,
     goToRoute: setRoute
   };
 
   const locationContextValue: ILocationContext = {
-    currentLocation,
     locations,
     addLocation,
     removeLocation
@@ -78,8 +68,8 @@ export default function App() {
             ) : (
               <MapView
                 style={style.map}
-                initialRegion={region}
-                onRegionChange={setRegion}
+                region={region}
+                onRegionChangeComplete={setRegion}
               />
             )}
             <View pointerEvents="box-none" style={style.mapOverlay}>
@@ -111,5 +101,14 @@ const style = StyleSheet.create({
     right: 0,
     bottom: 0,
     left: 0
+  },
+  callout: {
+    backgroundColor: "black",
+    opacity: 0.8,
+    paddingHorizontal: 5,
+    paddingVertical: 15
+  },
+  calloutText: {
+    color: "white"
   }
 });

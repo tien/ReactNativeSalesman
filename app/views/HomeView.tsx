@@ -10,18 +10,13 @@ import { LocationList, LocationListMode } from "../components/LocationList";
 import { SearchBar } from "../components/SearchBar";
 import { ILocation, LocationContext, NavigationContext, Route } from "../contexts";
 import { MapContext } from "../contexts/mapContext";
+import { gmapClient } from "../services/googleMap";
 
 export function HomeView() {
   const { currentRoute, goToRoute } = useContext(NavigationContext);
   const { locations, addLocation, removeLocation } = useContext(LocationContext);
   const { region } = useContext(MapContext);
 
-  const [gmapClient] = useState(
-    gmap.createClient({
-      key: Config.GOOGLE_MAPS_API_KEY,
-      Promise
-    })
-  );
   const [locationSuggestions, setLocationSuggestions] = useState<ILocation[]>([]);
   const [searchInput, setSearchInput] = useState("");
   const [debouncedSearch, setDebouncedSearch] = useState("");
@@ -41,22 +36,32 @@ export function HomeView() {
         setLocationSuggestions([]);
       } else {
         gmapClient
-          .placesAutoComplete({
-            sessiontoken: "",
-            input: debouncedSearch,
-            types: "address",
-            location: `${region.latitude},${region.longitude}`
+          .places({
+            query: debouncedSearch,
+            location: [region.latitude, region.longitude],
+            radius: 10000
           })
           .asPromise()
           .then(res =>
             setLocationSuggestions(
-              res.json.predictions.map(prediction => ({
-                placeId: prediction.place_id,
-                name: prediction.structured_formatting.main_text,
-                region: prediction.structured_formatting.secondary_text
-              }))
+              res.json.results.map(value => {
+                const name = value.formatted_address.slice(
+                  0,
+                  value.formatted_address.indexOf(",")
+                );
+                const secondaryName = value.formatted_address
+                  .slice(value.formatted_address.indexOf(",") + 1)
+                  .trim();
+
+                return {
+                  placeId: value.place_id,
+                  name,
+                  secondaryName
+                };
+              })
             )
-          );
+          )
+          .catch(e => console.log(e));
       }
     }
   }, [debouncedSearch]);
