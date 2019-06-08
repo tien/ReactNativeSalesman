@@ -39,10 +39,6 @@ export function SearchBar({
 const style = StyleSheet.create({
   searchBarContainer: {
     flexDirection: "row",
-    position: "absolute",
-    top: 40,
-    left: 10,
-    right: 10,
     height: 50,
     backgroundColor: "white",
     alignItems: "center",

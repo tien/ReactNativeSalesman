@@ -1,11 +1,18 @@
 import gmap from "@google/maps";
 import React, { useEffect, useState } from "react";
-import { GeolocationReturnType, StyleSheet, Text, TouchableOpacity, View } from "react-native";
+import {
+  GeolocationReturnType,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View
+} from "react-native";
 import Config from "react-native-config";
 import MapView from "react-native-maps";
 import { Subject } from "rxjs";
 import { debounceTime } from "rxjs/operators";
 
+import GPSIcon from "./src/assets/svg/gps.svg";
 import { LocationList, LocationListMode } from "./src/components/LocationList";
 import { SearchBar } from "./src/components/SearchBar";
 import { ILocation, mainContext, Route } from "./src/contexts";
@@ -86,49 +93,60 @@ export default function App() {
           longitudeDelta: 0.0421
         }}
       />
-      <SearchBar
-        placeholder="Search here"
-        value={searchInput}
-        onChangeText={text => {
-          setRoute(Route.SEARCH);
-          setSearchInput(text);
-        }}
-        onFocus={() => setRoute(Route.SEARCH)}
-        onBlur={() => setRoute(Route.HOME)}
-        showBackButton={currentRoute === Route.SEARCH}
-        onBackButtonPress={() => setRoute(Route.HOME)}
-      />
-      <View style={style.locationListWrapper}>
-        <View style={style.locationList}>
-          <Text style={style.destinationLabel}>Destinations</Text>
-          <TouchableOpacity style={style.directionsButton}>
-            <Text style={style.directionsButtonText}>DIRECTIONS</Text>
-          </TouchableOpacity>
+      <View pointerEvents="box-none" style={style.mapOverlay}>
+        <View style={style.searchBarContainer}>
+          <SearchBar
+            placeholder="Search here"
+            value={searchInput}
+            onChangeText={text => {
+              setRoute(Route.SEARCH);
+              setSearchInput(text);
+            }}
+            onFocus={() => setRoute(Route.SEARCH)}
+            showBackButton={currentRoute === Route.SEARCH}
+            onBackButtonPress={() => {
+              setRoute(Route.HOME);
+              setSearchInput("");
+            }}
+          />
         </View>
-        <LocationList
-          mode={(() => {
-            switch (currentRoute) {
-              case Route.HOME:
-                return LocationListMode.EDIT;
-              case Route.SEARCH:
-                return LocationListMode.ADD;
-              default:
-                return LocationListMode.EDIT;
-            }
-          })()}
-          locations={(() => {
-            switch (currentRoute) {
-              case Route.HOME:
-                return locations;
-              case Route.SEARCH:
-                return locationSuggestions;
-              default:
-                return locations;
-            }
-          })()}
-          addLocation={addLocation}
-          removeLocation={removeLocation}
-        />
+        <View style={style.locationListWrapper}>
+          <View style={style.GPSIconWrapper}>
+            <TouchableOpacity style={style.GPSIcon}>
+              <GPSIcon fill="white" width={35} height={35} preserveAspectRatio="true" />
+            </TouchableOpacity>
+          </View>
+          <View style={style.locationList}>
+            <Text style={style.destinationLabel}>Destinations</Text>
+            <TouchableOpacity style={style.directionsButton}>
+              <Text style={style.directionsButtonText}>DIRECTIONS</Text>
+            </TouchableOpacity>
+          </View>
+          <LocationList
+            mode={(() => {
+              switch (currentRoute) {
+                case Route.HOME:
+                  return LocationListMode.EDIT;
+                case Route.SEARCH:
+                  return LocationListMode.ADD;
+                default:
+                  return LocationListMode.EDIT;
+              }
+            })()}
+            locations={(() => {
+              switch (currentRoute) {
+                case Route.HOME:
+                  return locations;
+                case Route.SEARCH:
+                  return locationSuggestions;
+                default:
+                  return locations;
+              }
+            })()}
+            addLocation={addLocation}
+            removeLocation={removeLocation}
+          />
+        </View>
       </View>
     </mainContext.Provider>
   );
@@ -137,6 +155,34 @@ export default function App() {
 const style = StyleSheet.create({
   map: {
     flex: 1
+  },
+  mapOverlay: {
+    position: "absolute",
+    top: 0,
+    right: 0,
+    bottom: 0,
+    left: 0,
+    justifyContent: "space-between"
+  },
+  searchBarContainer: {
+    paddingTop: 50,
+    paddingHorizontal: 15
+  },
+  GPSIconWrapper: {
+    alignItems: "flex-end",
+    padding: 15
+  },
+  GPSIcon: {
+    justifyContent: "center",
+    alignItems: "center",
+    width: 60,
+    height: 50,
+    padding: 15,
+    backgroundColor: "#7792B5",
+    opacity: 0.8,
+    borderWidth: 1,
+    borderColor: "#5D5E84",
+    borderRadius: 20
   },
   destinationLabel: {
     fontSize: 35
@@ -150,10 +196,7 @@ const style = StyleSheet.create({
     color: "white"
   },
   locationListWrapper: {
-    position: "absolute",
-    right: 0,
-    bottom: 0,
-    left: 0
+    maxHeight: "50%"
   },
   locationList: {
     flexDirection: "row",

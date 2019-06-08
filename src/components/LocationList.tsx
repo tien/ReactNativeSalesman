@@ -1,5 +1,5 @@
 import React, { useContext } from "react";
-import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
+import { StyleSheet, Text, TouchableOpacity, View, ScrollView } from "react-native";
 import Swipeout from "react-native-swipeout";
 
 import { ILocation, mainContext } from "../contexts";
@@ -25,7 +25,7 @@ export function LocationList({
   const value = useContext(mainContext);
 
   return (
-    <View>
+    <ScrollView style={style.container}>
       {locations.map((location, index) => {
         const locationAlreadyAdded =
           value.locations.find(
@@ -69,16 +69,19 @@ export function LocationList({
           </Swipeout>
         );
       })}
-    </View>
+    </ScrollView>
   );
 }
 
 const style = StyleSheet.create({
+  container: {
+    backgroundColor: "white"
+  },
   entry: {
     backgroundColor: "white",
     paddingHorizontal: 15,
-    borderColor: "#777877",
-    borderWidth: 1
+    borderTopColor: "#777877",
+    borderTopWidth: 1
   },
   name: {
     fontSize: 24
