@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
-import { GeolocationReturnType, StyleSheet, Text, View, Dimensions } from "react-native";
-import MapView from "react-native-maps";
+import { Dimensions, GeolocationReturnType, StyleSheet, Text, View } from "react-native";
+import MapView, { Region } from "react-native-maps";
 
 import {
   ILocation,
@@ -10,6 +10,7 @@ import {
   NavigationContext,
   Route
 } from "./app/contexts";
+import { IMapContext, MapContext } from "./app/contexts/mapContext";
 import { HomeView } from "./app/views/HomeView";
 import { LocateView } from "./app/views/LocateView";
 
@@ -20,9 +21,9 @@ const LATITUDE_DELTA = 0.0922;
 const LONGITUDE_DELTA = LATITUDE_DELTA * ASPECT_RATIO;
 
 export default function App() {
-  const [initialLocation, setInitialLocation] = useState<GeolocationReturnType>();
   const [currentLocation, setCurrentLocation] = useState<GeolocationReturnType>();
   const [locations, setLocations] = useState<ILocation[]>([]);
+  const [region, setRegion] = useState<Region>();
   const [currentRoute, setRoute] = useState(Route.HOME);
 
   const addLocation = (l: ILocation) =>
@@ -32,7 +33,14 @@ export default function App() {
     setLocations(locations.filter(l1 => l1.placeId !== l.placeId));
 
   useEffect(() => {
-    navigator.geolocation.getCurrentPosition(position => setInitialLocation(position));
+    navigator.geolocation.getCurrentPosition(position =>
+      setRegion({
+        latitude: position.coords.latitude,
+        latitudeDelta: LATITUDE_DELTA,
+        longitude: position.coords.longitude,
+        longitudeDelta: LONGITUDE_DELTA
+      })
+    );
   }, []);
 
   useEffect(() => {
@@ -49,29 +57,31 @@ export default function App() {
   };
 
   const locationContextValue: ILocationContext = {
-    initialLocation,
     currentLocation,
     locations,
     addLocation,
     removeLocation
   };
 
+  const mapContextValue: IMapContext = {
+    region,
+    setRegion
+  };
+
   return (
     <NavigationContext.Provider value={navigationContextValue}>
       <LocationContext.Provider value={locationContextValue}>
-        {initialLocation === undefined ? (
-          <Text>Loading...</Text>
-        ) : (
+        <MapContext.Provider value={mapContextValue}>
           <>
-            <MapView
-              style={style.map}
-              initialRegion={{
-                latitude: initialLocation.coords.latitude,
-                latitudeDelta: LATITUDE_DELTA,
-                longitude: initialLocation.coords.longitude,
-                longitudeDelta: LONGITUDE_DELTA
-              }}
-            />
+            {region === undefined ? (
+              <Text>Loading...</Text>
+            ) : (
+              <MapView
+                style={style.map}
+                initialRegion={region}
+                onRegionChange={setRegion}
+              />
+            )}
             <View pointerEvents="box-none" style={style.mapOverlay}>
               {(() => {
                 switch (currentRoute) {
@@ -85,7 +95,7 @@ export default function App() {
               })()}
             </View>
           </>
-        )}
+        </MapContext.Provider>
       </LocationContext.Provider>
     </NavigationContext.Provider>
   );

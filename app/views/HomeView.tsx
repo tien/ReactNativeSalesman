@@ -9,12 +9,12 @@ import GPSIcon from "../assets/svg/gps.svg";
 import { LocationList, LocationListMode } from "../components/LocationList";
 import { SearchBar } from "../components/SearchBar";
 import { ILocation, LocationContext, NavigationContext, Route } from "../contexts";
+import { MapContext } from "../contexts/mapContext";
 
 export function HomeView() {
   const { currentRoute, goToRoute } = useContext(NavigationContext);
-  const { initialLocation, locations, addLocation, removeLocation } = useContext(
-    LocationContext
-  );
+  const { locations, addLocation, removeLocation } = useContext(LocationContext);
+  const { region } = useContext(MapContext);
 
   const [gmapClient] = useState(
     gmap.createClient({
@@ -36,7 +36,7 @@ export function HomeView() {
   }, [searchInput]);
 
   useEffect(() => {
-    if (initialLocation !== undefined) {
+    if (region !== undefined) {
       if (debouncedSearch === "") {
         setLocationSuggestions([]);
       } else {
@@ -45,9 +45,7 @@ export function HomeView() {
             sessiontoken: "",
             input: debouncedSearch,
             types: "address",
-            location: `${initialLocation.coords.latitude},${
-              initialLocation.coords.longitude
-            }`
+            location: `${region.latitude},${region.longitude}`
           })
           .asPromise()
           .then(res =>
@@ -63,7 +61,7 @@ export function HomeView() {
     }
   }, [debouncedSearch]);
 
-  return initialLocation === undefined ? (
+  return region === undefined ? (
     <Text>Loading...</Text>
   ) : (
     <View pointerEvents="box-none" style={style.viewContainer}>

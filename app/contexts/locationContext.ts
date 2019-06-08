@@ -10,7 +10,6 @@ export interface ILocation {
 }
 
 export interface ILocationContext {
-  initialLocation?: GeolocationReturnType;
   currentLocation?: GeolocationReturnType;
   locations: ILocation[];
   addLocation: (location: ILocation) => void;

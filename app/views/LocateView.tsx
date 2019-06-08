@@ -1,23 +1,18 @@
 import React, { useContext } from "react";
-import { Text, View, StyleSheet } from "react-native";
+import { StyleSheet, Text, View } from "react-native";
 
 import { Button } from "../components/Button";
-import { NavigationContext, Route } from "../contexts";
+import { LocationContext, NavigationContext, Route } from "../contexts";
+import { MapContext } from "../contexts/mapContext";
 
 export function LocateView() {
   const { goToRoute } = useContext(NavigationContext);
+  const { currentLocation, addLocation } = useContext(LocationContext);
+  const { region } = useContext(MapContext);
 
   return (
     <View pointerEvents="box-none" style={style.container}>
-      <View
-        style={{
-          flexDirection: "row",
-          justifyContent: "space-around",
-          alignItems: "center",
-          backgroundColor: "white",
-          padding: 20
-        }}
-      >
+      <View style={style.buttonsContainer}>
         <Button onPress={() => goToRoute(Route.HOME)}>
           <Text>CANCEL</Text>
         </Button>
@@ -30,5 +25,16 @@ export function LocateView() {
 }
 
 const style = StyleSheet.create({
-  container: { width: "100%", height: "100%", justifyContent: "flex-end" }
+  container: {
+    width: "100%",
+    height: "100%",
+    justifyContent: "flex-end"
+  },
+  buttonsContainer: {
+    flexDirection: "row",
+    justifyContent: "space-around",
+    alignItems: "center",
+    backgroundColor: "white",
+    padding: 20
+  }
 });
