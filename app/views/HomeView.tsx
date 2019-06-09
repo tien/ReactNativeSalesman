@@ -1,3 +1,4 @@
+import crypto from "crypto";
 import React, { useContext, useEffect, useState } from "react";
 import { Alert, StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import { from, Subject } from "rxjs";
@@ -18,42 +19,47 @@ export function HomeView() {
   const [locationSuggestions, setLocationSuggestions] = useState<ILocation[]>([]);
   const [searchInput, setSearchInput] = useState("");
   const [searchInputStream] = useState(new Subject<string>());
+  const [sessiontoken] = useState(crypto.randomBytes(16).toString("hex"));
+
+  const addSuggestionToLocation = (location: any) =>
+    gmapClient
+      .place({ placeid: location.placeId })
+      .asPromise()
+      .then(value => {
+        const place = value.json.result;
+        const address = place.formatted_address;
+        addLocation({
+          placeId: location.placeId,
+          name: address.slice(0, address.indexOf(",")),
+          secondaryName: address.slice(address.indexOf(",") + 1),
+          latitude: place.geometry.location.lat,
+          longitude: place.geometry.location.lng
+        });
+      });
 
   useEffect(() => {
     const observervable = searchInputStream.pipe(
       debounceTime(500),
       distinctUntilChanged(),
       switchMap(text => {
-        console.log(text);
         if (text === "") {
           return from([[]]);
         } else {
           return from(
             gmapClient
-              .places({
-                query: text,
+              .placesAutoComplete({
+                sessiontoken,
+                input: text,
                 location: [region!.latitude, region!.longitude],
                 radius: 50000
               })
               .asPromise()
               .then(res =>
-                res.json.results.map(value => {
-                  const name = value.formatted_address.slice(
-                    0,
-                    value.formatted_address.indexOf(",")
-                  );
-                  const secondaryName = value.formatted_address
-                    .slice(value.formatted_address.indexOf(",") + 1)
-                    .trim();
-
-                  return {
-                    placeId: value.place_id,
-                    name,
-                    secondaryName,
-                    latitude: value.geometry.location.lat,
-                    longitude: value.geometry.location.lng
-                  };
-                })
+                res.json.predictions.map(value => ({
+                  placeId: value.place_id,
+                  name: value.structured_formatting.main_text,
+                  secondaryName: value.structured_formatting.secondary_text
+                }))
               )
               .catch(e => new Error(e))
           );
@@ -62,11 +68,10 @@ export function HomeView() {
     );
 
     const subscription = observervable.subscribe(value => {
-      console.log(value);
       if (value instanceof Error) {
         Alert.alert("Error", Error.name);
       } else {
-        setLocationSuggestions(value);
+        setLocationSuggestions(value as any);
       }
     });
 
@@ -127,7 +132,7 @@ export function HomeView() {
           alreadyAdded={location =>
             locations.some(savedLocation => savedLocation.placeId === location.placeId)
           }
-          addLocation={addLocation}
+          addLocation={addSuggestionToLocation}
           removeLocation={removeLocation}
         />
       </View>
