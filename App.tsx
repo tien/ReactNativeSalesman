@@ -1,4 +1,5 @@
 import polyline from "@mapbox/polyline";
+import moment from "moment";
 import React, { ReactElement, useEffect, useState } from "react";
 import { Dimensions, StyleSheet, Text, View } from "react-native";
 import MapView, { Marker, Polyline, Region } from "react-native-maps";
@@ -12,6 +13,7 @@ import {
   Route
 } from "./app/contexts";
 import { IMapContext, MapContext } from "./app/contexts/mapContext";
+import { pushNotification } from "./app/services/pushNotification";
 import { DirectionView } from "./app/views/DirectionView";
 import { HomeView } from "./app/views/HomeView";
 import { LocateView } from "./app/views/LocateView";
@@ -30,8 +32,16 @@ export default function App() {
   const [encodedPolyline, setEncodedPolyline] = useState<string>();
   const [markers, setMarkers] = useState<Array<ReactElement<Marker>>>([]);
 
-  const addLocation = (l: ILocation) =>
+  const addLocation = (l: ILocation) => {
     setLocations([...locations.filter(l1 => l1.placeId !== l.placeId), l]);
+    pushNotification.cancelAllLocalNotifications();
+    pushNotification.localNotificationSchedule({
+      date: moment()
+        .add(5, "minutes")
+        .toDate(),
+      message: `${l.name} added at:\n${new Date()}`
+    });
+  };
 
   const removeLocation = (l: ILocation) =>
     setLocations(locations.filter(l1 => l1.placeId !== l.placeId));
@@ -72,52 +82,50 @@ export default function App() {
     <NavigationContext.Provider value={navigationContextValue}>
       <LocationContext.Provider value={locationContextValue}>
         <MapContext.Provider value={mapContextValue}>
-          <>
-            {region === undefined ? (
-              <Text>Loading...</Text>
-            ) : (
-              <MapView
-                ref={component => setMap(component)}
-                style={style.map}
-                initialRegion={region}
-                onRegionChange={setRegion}
-              >
-                {markers.length !== 0
-                  ? markers
-                  : locations.map(({ placeId, latitude, longitude, name }) => (
-                      <Marker
-                        key={`location:${placeId}`}
-                        coordinate={{ latitude, longitude }}
-                        title={name}
-                      />
-                    ))}
-                {encodedPolyline && (
-                  <Polyline
-                    strokeWidth={3}
-                    strokeColor="rgba(72, 138, 244, 0.66)"
-                    fillColor="rgba(72, 138, 244, 0.66)"
-                    coordinates={polyline
-                      .decode(encodedPolyline)
-                      .map(([latitude, longitude]) => ({ latitude, longitude }))}
-                  />
-                )}
-              </MapView>
-            )}
-            <View pointerEvents="box-none" style={style.mapOverlay}>
-              {(() => {
-                switch (currentRoute) {
-                  case Route.LOCATE:
-                    return <LocateView />;
-                  case Route.DIRECTION:
-                    return <DirectionView />;
-                  case Route.HOME:
-                  case Route.SEARCH:
-                  default:
-                    return <HomeView />;
-                }
-              })()}
-            </View>
-          </>
+          {region === undefined ? (
+            <Text>Loading...</Text>
+          ) : (
+            <MapView
+              ref={component => setMap(component)}
+              style={style.map}
+              initialRegion={region}
+              onRegionChange={setRegion}
+            >
+              {markers.length !== 0
+                ? markers
+                : locations.map(({ placeId, latitude, longitude, name }) => (
+                    <Marker
+                      key={`location:${placeId}`}
+                      coordinate={{ latitude, longitude }}
+                      title={name}
+                    />
+                  ))}
+              {encodedPolyline && (
+                <Polyline
+                  strokeWidth={3}
+                  strokeColor="rgba(72, 138, 244, 0.66)"
+                  fillColor="rgba(72, 138, 244, 0.66)"
+                  coordinates={polyline
+                    .decode(encodedPolyline)
+                    .map(([latitude, longitude]) => ({ latitude, longitude }))}
+                />
+              )}
+            </MapView>
+          )}
+          <View pointerEvents="box-none" style={style.mapOverlay}>
+            {(() => {
+              switch (currentRoute) {
+                case Route.LOCATE:
+                  return <LocateView />;
+                case Route.DIRECTION:
+                  return <DirectionView />;
+                case Route.HOME:
+                case Route.SEARCH:
+                default:
+                  return <HomeView />;
+              }
+            })()}
+          </View>
         </MapContext.Provider>
       </LocationContext.Provider>
     </NavigationContext.Provider>
