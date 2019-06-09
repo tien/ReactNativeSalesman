@@ -68,10 +68,9 @@ export function DirectionView() {
 
   return (
     <View pointerEvents="box-none" style={style.container}>
-      <Text>{result}</Text>
       <View style={spacing.bottomNavContainer}>
         <View>
-          <Text>Travel Distance: {result}</Text>
+          <Text style={{ fontSize: 20 }}>Travel Distance: {result}</Text>
         </View>
         <Button onPress={() => goToRoute(Route.HOME)}>
           <Text>BACK</Text>

@@ -93,6 +93,9 @@ export default function App() {
                     ))}
                 {encodedPolyline && (
                   <Polyline
+                    strokeWidth={3}
+                    strokeColor="rgba(72, 138, 244, 0.66)"
+                    fillColor="rgba(72, 138, 244, 0.66)"
                     coordinates={polyline
                       .decode(encodedPolyline)
                       .map(([latitude, longitude]) => ({ latitude, longitude }))}

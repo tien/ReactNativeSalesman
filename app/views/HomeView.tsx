@@ -24,14 +24,16 @@ export function HomeView() {
       debounceTime(500),
       distinctUntilChanged(),
       switchMap(text => {
+        console.log(text);
         if (text === "") {
-          return from([]);
+          return from([[]]);
         } else {
           return from(
             gmapClient
               .places({
                 query: text,
-                location: [region!.latitude, region!.longitude]
+                location: [region!.latitude, region!.longitude],
+                radius: 50000
               })
               .asPromise()
               .then(res =>
@@ -60,6 +62,7 @@ export function HomeView() {
     );
 
     const subscription = observervable.subscribe(value => {
+      console.log(value);
       if (value instanceof Error) {
         Alert.alert("Error", Error.name);
       } else {

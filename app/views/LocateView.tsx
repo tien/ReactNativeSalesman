@@ -1,5 +1,5 @@
 import React, { useContext, useEffect } from "react";
-import { StyleSheet, Text, View, Alert } from "react-native";
+import { Alert, StyleSheet, Text, View } from "react-native";
 import MapView from "react-native-maps";
 
 import MapMarkerIcon from "../assets/svg/map-marker.svg";
@@ -7,8 +7,7 @@ import { Button } from "../components/Button";
 import { LocationContext, NavigationContext, Route } from "../contexts";
 import { MapContext } from "../contexts/mapContext";
 import { gmapClient } from "../services/googleMap";
-import { spacing } from "../styles";
-import { mapStyle } from "../styles";
+import { mapStyle, spacing } from "../styles";
 
 export function LocateView() {
   const { goToRoute } = useContext(NavigationContext);
