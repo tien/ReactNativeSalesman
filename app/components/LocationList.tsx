@@ -28,12 +28,12 @@ export function LocationList({
 
   return (
     <ScrollView style={style.container} scrollEnabled={scrollEnabled}>
-      {locations.map((location, index) => {
+      {locations.map(location => {
         const locationAlreadyAdded = alreadyAdded(location);
 
         return (
           <Swipeout
-            key={index}
+            key={location.placeId}
             style={style.entry}
             scroll={setScrollEnabled}
             disabled={mode === LocationListMode.ADD}
