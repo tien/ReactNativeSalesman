@@ -1,11 +1,11 @@
 import React, { useContext, useState } from "react";
 import {
   ScrollView,
+  StyleProp,
   StyleSheet,
   Text,
   TouchableOpacity,
   View,
-  StyleProp,
   ViewStyle
 } from "react-native";
 import Swipeout from "react-native-swipeout";

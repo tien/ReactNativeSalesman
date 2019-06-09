@@ -1,6 +1,6 @@
 import { useContext, useEffect, useState } from "react";
 import React from "react";
-import { StyleSheet, Text, View } from "react-native";
+import { Alert, StyleSheet, Text, View } from "react-native";
 import { Marker } from "react-native-maps";
 
 import { Button } from "../components/Button";
@@ -22,7 +22,7 @@ export function DirectionView() {
   const [result, setResult] = useState();
 
   useEffect(() => {
-    (async () => {
+    const calculateAndDisplayTSP = async () => {
       const { path, distance } = await TSP(locations);
       const findLocation = (placeId: string) =>
         locations.find(location => location.placeId === placeId) as ILocation;
@@ -56,7 +56,9 @@ export function DirectionView() {
           ))
       );
       setEncodedPolyline(res.json.routes[0].overview_polyline.points);
-    })();
+    };
+
+    calculateAndDisplayTSP().catch(e => Alert.alert(e));
 
     return () => {
       setEncodedPolyline(undefined);

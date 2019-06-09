@@ -1,5 +1,5 @@
 import React, { useContext, useEffect } from "react";
-import { StyleSheet, Text, View } from "react-native";
+import { StyleSheet, Text, View, Alert } from "react-native";
 import MapView from "react-native-maps";
 
 import MapMarkerIcon from "../assets/svg/map-marker.svg";
@@ -49,7 +49,7 @@ export function LocateView() {
           });
           goToRoute(Route.HOME);
         })
-        .catch(e => console.log(e));
+        .catch(e => Alert.alert("Error", e));
     }
   };
 

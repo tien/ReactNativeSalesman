@@ -1,7 +1,7 @@
 import React, { useContext, useEffect, useState } from "react";
-import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
-import { Subject } from "rxjs";
-import { debounceTime } from "rxjs/operators";
+import { Alert, StyleSheet, Text, TouchableOpacity, View } from "react-native";
+import { from, Subject } from "rxjs";
+import { debounceTime, distinctUntilChanged, switchMap } from "rxjs/operators";
 
 import GPSIcon from "../assets/svg/gps.svg";
 import { LocationList, LocationListMode } from "../components/LocationList";
@@ -17,54 +17,62 @@ export function HomeView() {
 
   const [locationSuggestions, setLocationSuggestions] = useState<ILocation[]>([]);
   const [searchInput, setSearchInput] = useState("");
-  const [debouncedSearch, setDebouncedSearch] = useState("");
   const [searchInputStream] = useState(new Subject<string>());
 
-  searchInputStream.pipe(debounceTime(500)).subscribe(text => {
-    setDebouncedSearch(text);
-  });
+  useEffect(() => {
+    const observervable = searchInputStream.pipe(
+      debounceTime(500),
+      distinctUntilChanged(),
+      switchMap(text => {
+        if (text === "") {
+          return from([]);
+        } else {
+          return from(
+            gmapClient
+              .places({
+                query: text,
+                location: [region!.latitude, region!.longitude]
+              })
+              .asPromise()
+              .then(res =>
+                res.json.results.map(value => {
+                  const name = value.formatted_address.slice(
+                    0,
+                    value.formatted_address.indexOf(",")
+                  );
+                  const secondaryName = value.formatted_address
+                    .slice(value.formatted_address.indexOf(",") + 1)
+                    .trim();
+
+                  return {
+                    placeId: value.place_id,
+                    name,
+                    secondaryName,
+                    latitude: value.geometry.location.lat,
+                    longitude: value.geometry.location.lng
+                  };
+                })
+              )
+              .catch(e => new Error(e))
+          );
+        }
+      })
+    );
+
+    const subscription = observervable.subscribe(value => {
+      if (value instanceof Error) {
+        Alert.alert("Error", Error.name);
+      } else {
+        setLocationSuggestions(value);
+      }
+    });
+
+    return () => subscription.unsubscribe();
+  }, [region]);
 
   useEffect(() => {
     searchInputStream.next(searchInput);
   }, [searchInput]);
-
-  useEffect(() => {
-    if (region !== undefined) {
-      if (debouncedSearch === "") {
-        setLocationSuggestions([]);
-      } else {
-        gmapClient
-          .places({
-            query: debouncedSearch,
-            location: [region.latitude, region.longitude],
-            radius: 10000
-          })
-          .asPromise()
-          .then(res =>
-            setLocationSuggestions(
-              res.json.results.map(value => {
-                const name = value.formatted_address.slice(
-                  0,
-                  value.formatted_address.indexOf(",")
-                );
-                const secondaryName = value.formatted_address
-                  .slice(value.formatted_address.indexOf(",") + 1)
-                  .trim();
-
-                return {
-                  placeId: value.place_id,
-                  name,
-                  secondaryName,
-                  latitude: value.geometry.location.lat,
-                  longitude: value.geometry.location.lng
-                };
-              })
-            )
-          )
-          .catch(e => console.log(e));
-      }
-    }
-  }, [debouncedSearch]);
 
   return region === undefined ? (
     <Text>Loading...</Text>
