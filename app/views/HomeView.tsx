@@ -22,7 +22,7 @@ export function HomeView() {
   const [searchInputStream] = useState(new Subject<string>());
   const [sessiontoken] = useState(crypto.randomBytes(16).toString("hex"));
 
-  const addSuggestionToLocation = (location: any) =>
+  const addSuggestionToLocations = (location: any) =>
     gmapClient
       .place({ placeid: location.placeId })
       .asPromise()
@@ -137,7 +137,7 @@ export function HomeView() {
           alreadyAdded={location =>
             locations.some(savedLocation => savedLocation.placeId === location.placeId)
           }
-          addLocation={addSuggestionToLocation}
+          addLocation={addSuggestionToLocations}
           removeLocation={removeLocation}
         />
       </View>
