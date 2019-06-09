@@ -6,11 +6,16 @@ export interface IMapContext {
   map: MapView | null;
   region?: Region;
   setRegion: (region: Region) => void;
+  encodedPolyline?: string;
+  setEncodedPolyline: (encoded?: string) => void;
 }
 
 const defaultValue: IMapContext = {
   map: null,
   setRegion(region) {
+    return;
+  },
+  setEncodedPolyline(encoded) {
     return;
   }
 };

@@ -7,6 +7,7 @@ import { Button } from "../components/Button";
 import { LocationContext, NavigationContext, Route } from "../contexts";
 import { MapContext } from "../contexts/mapContext";
 import { gmapClient } from "../services/googleMap";
+import { spacing } from "../styles";
 
 export function LocateView() {
   const { goToRoute } = useContext(NavigationContext);
@@ -63,7 +64,7 @@ export function LocateView() {
         <MapMarkerIcon fill="#BA2831" width={35} height={35} />
       </View>
       <View pointerEvents="box-none" style={style.container}>
-        <View style={style.buttonsContainer}>
+        <View style={spacing.bottomNavContainer}>
           <Button onPress={() => goToRoute(Route.HOME)}>
             <Text>CANCEL</Text>
           </Button>
@@ -101,12 +102,5 @@ const style = StyleSheet.create({
     width: "100%",
     height: "100%",
     justifyContent: "flex-end"
-  },
-  buttonsContainer: {
-    flexDirection: "row",
-    justifyContent: "space-around",
-    alignItems: "center",
-    backgroundColor: "white",
-    padding: 20
   }
 });

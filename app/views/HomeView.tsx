@@ -87,20 +87,27 @@ export function HomeView() {
         />
       </View>
       <View style={style.locationListWrapper}>
-        <View style={style.GPSIconWrapper}>
-          <TouchableOpacity style={style.GPSIcon} onPress={() => goToRoute(Route.LOCATE)}>
-            <GPSIcon fill="white" width={35} height={35} preserveAspectRatio="true" />
-          </TouchableOpacity>
-        </View>
-        <View style={style.locationList}>
-          <Text style={style.destinationLabel}>Destinations</Text>
-          <TouchableOpacity
-            style={style.directionsButton}
-            onPress={() => goToRoute(Route.DIRECTION)}
-          >
-            <Text style={style.directionsButtonText}>DIRECTIONS</Text>
-          </TouchableOpacity>
-        </View>
+        {currentRoute === Route.HOME && (
+          <>
+            <View style={style.GPSIconWrapper}>
+              <TouchableOpacity
+                style={style.GPSIcon}
+                onPress={() => goToRoute(Route.LOCATE)}
+              >
+                <GPSIcon fill="white" width={35} height={35} preserveAspectRatio="true" />
+              </TouchableOpacity>
+            </View>
+            <View style={style.locationList}>
+              <Text style={style.destinationLabel}>Destinations</Text>
+              <TouchableOpacity
+                style={style.directionsButton}
+                onPress={() => goToRoute(Route.DIRECTION)}
+              >
+                <Text style={style.directionsButtonText}>DIRECTIONS</Text>
+              </TouchableOpacity>
+            </View>
+          </>
+        )}
         <LocationList
           mode={(() => {
             switch (currentRoute) {

@@ -1,6 +1,7 @@
+import polyline from "@mapbox/polyline";
 import React, { useEffect, useState } from "react";
 import { Dimensions, StyleSheet, Text, View } from "react-native";
-import MapView, { Region } from "react-native-maps";
+import MapView, { Marker, Polyline, Region } from "react-native-maps";
 
 import {
   ILocation,
@@ -26,6 +27,7 @@ export default function App() {
   const [map, setMap] = useState<MapView | null>(null);
   const [region, setRegion] = useState<Region>();
   const [currentRoute, setRoute] = useState(Route.HOME);
+  const [encodedPolyline, setEncodedPolyline] = useState<string>();
 
   const addLocation = (l: ILocation) =>
     setLocations([...locations.filter(l1 => l1.placeId !== l.placeId), l]);
@@ -58,7 +60,9 @@ export default function App() {
   const mapContextValue: IMapContext = {
     map,
     region,
-    setRegion
+    setRegion,
+    encodedPolyline,
+    setEncodedPolyline
   };
 
   return (
@@ -74,7 +78,22 @@ export default function App() {
                 style={style.map}
                 initialRegion={region}
                 onRegionChange={setRegion}
-              />
+              >
+                {locations.map(({ placeId, latitude, longitude, name }) => (
+                  <Marker
+                    key={placeId}
+                    coordinate={{ latitude, longitude }}
+                    title={name}
+                  />
+                ))}
+                {encodedPolyline && (
+                  <Polyline
+                    coordinates={polyline
+                      .decode(encodedPolyline)
+                      .map(([latitude, longitude]) => ({ latitude, longitude }))}
+                  />
+                )}
+              </MapView>
             )}
             <View pointerEvents="box-none" style={style.mapOverlay}>
               {(() => {
