@@ -11,12 +11,12 @@ import {
   LocationContext,
   NavigationContext,
   Route
-} from "./app/contexts";
-import { IMapContext, MapContext } from "./app/contexts/mapContext";
-import { pushNotification } from "./app/services/pushNotification";
-import { DirectionView } from "./app/views/DirectionView";
-import { HomeView } from "./app/views/HomeView";
-import { LocateView } from "./app/views/LocateView";
+} from "./contexts";
+import { IMapContext, MapContext } from "./contexts/mapContext";
+import { pushNotification } from "./services/pushNotification";
+import { DirectionView } from "./views/DirectionView";
+import { HomeView } from "./views/HomeView";
+import { LocateView } from "./views/LocateView";
 
 const { width, height } = Dimensions.get("window");
 
