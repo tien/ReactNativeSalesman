@@ -1,6 +1,5 @@
-import { createContext } from "react";
-import { Region } from "react-native-maps";
-import MapView from "react-native-maps";
+import { createContext, ReactElement } from "react";
+import MapView, { Marker, Region } from "react-native-maps";
 
 export interface IMapContext {
   map: MapView | null;
@@ -8,6 +7,8 @@ export interface IMapContext {
   setRegion: (region: Region) => void;
   encodedPolyline?: string;
   setEncodedPolyline: (encoded?: string) => void;
+  markers: Array<ReactElement<Marker>>;
+  setMarkers: (markers: Array<ReactElement<Marker>>) => void;
 }
 
 const defaultValue: IMapContext = {
@@ -16,6 +17,10 @@ const defaultValue: IMapContext = {
     return;
   },
   setEncodedPolyline(encoded) {
+    return;
+  },
+  markers: [],
+  setMarkers(markers) {
     return;
   }
 };

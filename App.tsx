@@ -1,5 +1,5 @@
 import polyline from "@mapbox/polyline";
-import React, { useEffect, useState } from "react";
+import React, { ReactElement, useEffect, useState } from "react";
 import { Dimensions, StyleSheet, Text, View } from "react-native";
 import MapView, { Marker, Polyline, Region } from "react-native-maps";
 
@@ -23,11 +23,12 @@ const LATITUDE_DELTA = 0.0922;
 const LONGITUDE_DELTA = LATITUDE_DELTA * ASPECT_RATIO;
 
 export default function App() {
+  const [currentRoute, setRoute] = useState(Route.HOME);
   const [locations, setLocations] = useState<ILocation[]>([]);
   const [map, setMap] = useState<MapView | null>(null);
   const [region, setRegion] = useState<Region>();
-  const [currentRoute, setRoute] = useState(Route.HOME);
   const [encodedPolyline, setEncodedPolyline] = useState<string>();
+  const [markers, setMarkers] = useState<Array<ReactElement<Marker>>>([]);
 
   const addLocation = (l: ILocation) =>
     setLocations([...locations.filter(l1 => l1.placeId !== l.placeId), l]);
@@ -62,7 +63,9 @@ export default function App() {
     region,
     setRegion,
     encodedPolyline,
-    setEncodedPolyline
+    setEncodedPolyline,
+    markers,
+    setMarkers
   };
 
   return (
@@ -79,13 +82,15 @@ export default function App() {
                 initialRegion={region}
                 onRegionChange={setRegion}
               >
-                {locations.map(({ placeId, latitude, longitude, name }) => (
-                  <Marker
-                    key={placeId}
-                    coordinate={{ latitude, longitude }}
-                    title={name}
-                  />
-                ))}
+                {markers.length !== 0
+                  ? markers
+                  : locations.map(({ placeId, latitude, longitude, name }) => (
+                      <Marker
+                        key={`location:${placeId}`}
+                        coordinate={{ latitude, longitude }}
+                        title={name}
+                      />
+                    ))}
                 {encodedPolyline && (
                   <Polyline
                     coordinates={polyline

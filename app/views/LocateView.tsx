@@ -8,6 +8,7 @@ import { LocationContext, NavigationContext, Route } from "../contexts";
 import { MapContext } from "../contexts/mapContext";
 import { gmapClient } from "../services/googleMap";
 import { spacing } from "../styles";
+import { mapStyle } from "../styles";
 
 export function LocateView() {
   const { goToRoute } = useContext(NavigationContext);
@@ -55,9 +56,9 @@ export function LocateView() {
   return (
     <>
       <View pointerEvents="none" style={style.mapMarkerContainer}>
-        <View style={style.bubble}>
-          <Text style={style.bubbleText}>GPS co-ordinates</Text>
-          <Text style={style.bubbleText}>
+        <View style={mapStyle.bubble}>
+          <Text style={mapStyle.bubbleText}>GPS co-ordinates</Text>
+          <Text style={mapStyle.bubbleText}>
             {region!.latitude.toFixed(7)} N {region!.longitude.toFixed(7)} E
           </Text>
         </View>
@@ -86,17 +87,6 @@ const style = StyleSheet.create({
     width: "100%",
     top: 0,
     bottom: "50%"
-  },
-  bubble: {
-    alignItems: "center",
-    backgroundColor: "rgba(0,0,0,0.6)",
-    marginBottom: 5,
-    paddingHorizontal: 5,
-    paddingVertical: 15,
-    borderRadius: 15
-  },
-  bubbleText: {
-    color: "white"
   },
   container: {
     width: "100%",

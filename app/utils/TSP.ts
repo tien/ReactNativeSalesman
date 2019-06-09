@@ -20,7 +20,7 @@ function recursiveTSP(
   const key = `${a}:${b.slice().sort()}`;
   const computed = memory[key];
   if (computed !== undefined) {
-    return { path: [a, ...computed.path], distance: computed.distance };
+    return { path: computed.path, distance: computed.distance };
   }
 
   const result: { path: string[]; distance: number } = b
