@@ -22,43 +22,48 @@ export function DirectionView() {
   const [result, setResult] = useState();
 
   useEffect(() => {
-    const calculateAndDisplayTSP = async () => {
-      const { path, distance } = await TSP(locations);
-      const findLocation = (placeId: string) =>
-        locations.find(location => location.placeId === placeId) as ILocation;
+    if (locations.length === 0) {
+      Alert.alert("You haven't select any route yet");
+      goToRoute(Route.HOME);
+    } else {
+      const calculateAndDisplayTSP = async () => {
+        const { path, distance } = await TSP(locations);
+        const findLocation = (placeId: string) =>
+          locations.find(location => location.placeId === placeId) as ILocation;
 
-      const origin = findLocation(path[0]);
-      const destination = findLocation(path[path.length - 1]);
-      const waypoints = path.slice(0, path.length).map(findLocation);
+        const origin = findLocation(path[0]);
+        const destination = findLocation(path[path.length - 1]);
+        const waypoints = path.slice(0, path.length).map(findLocation);
 
-      const res = await gmapClient
-        .directions({
-          origin,
-          destination,
-          waypoints
-        })
-        .asPromise();
+        const res = await gmapClient
+          .directions({
+            origin,
+            destination,
+            waypoints
+          })
+          .asPromise();
 
-      setResult(distance);
-      setMarkers(
-        path
-          .slice(0, path.length - 1)
-          .map(findLocation)
-          .map(({ placeId, latitude, longitude, name }, index) => (
-            <Marker
-              style={mapStyle.bubble}
-              key={`path:${placeId}`}
-              coordinate={{ latitude, longitude }}
-            >
-              <Text style={mapStyle.bubbleText}>Stop: {index + 1}</Text>
-              <Text style={mapStyle.bubbleText}>{name}</Text>
-            </Marker>
-          ))
-      );
-      setEncodedPolyline(res.json.routes[0].overview_polyline.points);
-    };
+        setResult(distance);
+        setMarkers(
+          path
+            .slice(0, path.length - 1)
+            .map(findLocation)
+            .map(({ placeId, latitude, longitude, name }, index) => (
+              <Marker
+                style={mapStyle.bubble}
+                key={`path:${placeId}`}
+                coordinate={{ latitude, longitude }}
+              >
+                <Text style={mapStyle.bubbleText}>Stop: {index + 1}</Text>
+                <Text style={mapStyle.bubbleText}>{name}</Text>
+              </Marker>
+            ))
+        );
+        setEncodedPolyline(res.json.routes[0].overview_polyline.points);
+      };
 
-    calculateAndDisplayTSP().catch(e => Alert.alert(e));
+      calculateAndDisplayTSP().catch(e => Alert.alert(e));
+    }
 
     return () => {
       setEncodedPolyline(undefined);

@@ -38,7 +38,7 @@ export function LocationList({
 
   return (
     <ScrollView style={[style.container, styleProp]} scrollEnabled={scrollEnabled}>
-      {locations.map(location => {
+      {locations.map((location, index) => {
         const locationAlreadyAdded = alreadyAdded(location);
 
         return (
@@ -71,9 +71,14 @@ export function LocationList({
                   </Text>
                 </TouchableOpacity>
               )}
-              <View>
-                <Text style={style.name}>{location.name}</Text>
-                <Text style={style.secondaryName}>{location.secondaryName}</Text>
+              <View style={{ flexDirection: "row" }}>
+                {mode === LocationListMode.EDIT && (
+                  <Text style={[style.name, { paddingRight: 5 }]}>({index})</Text>
+                )}
+                <View>
+                  <Text style={style.name}>{location.name}</Text>
+                  <Text style={style.secondaryName}>{location.secondaryName}</Text>
+                </View>
               </View>
             </View>
           </Swipeout>

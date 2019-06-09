@@ -5,6 +5,7 @@ import { from, Subject } from "rxjs";
 import { debounceTime, distinctUntilChanged, switchMap } from "rxjs/operators";
 
 import GPSIcon from "../assets/svg/gps.svg";
+import TurnRightSignIcon from "../assets/svg/turn-right-sign.svg";
 import { LocationList, LocationListMode } from "../components/LocationList";
 import { SearchBar } from "../components/SearchBar";
 import { ILocation, LocationContext, NavigationContext, Route } from "../contexts";
@@ -39,7 +40,7 @@ export function HomeView() {
 
   useEffect(() => {
     const observervable = searchInputStream.pipe(
-      debounceTime(500),
+      debounceTime(250),
       distinctUntilChanged(),
       switchMap(text => {
         if (text === "") {
@@ -102,15 +103,18 @@ export function HomeView() {
           }}
         />
       </View>
-      <View style={currentRoute === Route.SEARCH ? { flex: 1 } : { height: "50%" }}>
+      <View
+        pointerEvents="box-none"
+        style={currentRoute === Route.SEARCH ? { flex: 1 } : { height: "50%" }}
+      >
         {currentRoute === Route.HOME && (
           <>
-            <View style={style.GPSIconWrapper}>
+            <View pointerEvents="box-none" style={style.GPSIconWrapper}>
               <TouchableOpacity
                 style={style.GPSIcon}
                 onPress={() => goToRoute(Route.LOCATE)}
               >
-                <GPSIcon fill="white" width={35} height={35} preserveAspectRatio="true" />
+                <GPSIcon fill="white" width={35} height={35} />
               </TouchableOpacity>
             </View>
             <View style={style.locationList}>
@@ -119,6 +123,7 @@ export function HomeView() {
                 style={style.directionsButton}
                 onPress={() => goToRoute(Route.DIRECTION)}
               >
+                <TurnRightSignIcon fill="white" width={20} height={20} />
                 <Text style={style.directionsButtonText}>DIRECTIONS</Text>
               </TouchableOpacity>
             </View>
@@ -170,11 +175,14 @@ const style = StyleSheet.create({
     fontSize: 35
   },
   directionsButton: {
+    flexDirection: "row",
+    alignItems: "center",
     backgroundColor: "#2f3a7d",
     padding: 5,
     borderRadius: 5
   },
   directionsButtonText: {
+    paddingLeft: 5,
     color: "white"
   },
   locationList: {
