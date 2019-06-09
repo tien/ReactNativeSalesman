@@ -86,7 +86,7 @@ export function HomeView() {
           }}
         />
       </View>
-      <View style={style.locationListWrapper}>
+      <View style={currentRoute === Route.SEARCH ? { flex: 1 } : { height: "50%" }}>
         {currentRoute === Route.HOME && (
           <>
             <View style={style.GPSIconWrapper}>
@@ -109,26 +109,10 @@ export function HomeView() {
           </>
         )}
         <LocationList
-          mode={(() => {
-            switch (currentRoute) {
-              case Route.HOME:
-                return LocationListMode.EDIT;
-              case Route.SEARCH:
-                return LocationListMode.ADD;
-              default:
-                return LocationListMode.EDIT;
-            }
-          })()}
-          locations={(() => {
-            switch (currentRoute) {
-              case Route.HOME:
-                return locations;
-              case Route.SEARCH:
-                return locationSuggestions;
-              default:
-                return locations;
-            }
-          })()}
+          mode={
+            currentRoute === Route.SEARCH ? LocationListMode.ADD : LocationListMode.EDIT
+          }
+          locations={currentRoute === Route.SEARCH ? locationSuggestions : locations}
           alreadyAdded={location =>
             locations.some(savedLocation => savedLocation.placeId === location.placeId)
           }
@@ -147,8 +131,8 @@ const style = StyleSheet.create({
     justifyContent: "space-between"
   },
   searchBarContainer: {
-    paddingTop: 50,
-    paddingHorizontal: 15
+    paddingHorizontal: 15,
+    paddingVertical: 50
   },
   GPSIconWrapper: {
     alignItems: "flex-end",
@@ -176,9 +160,6 @@ const style = StyleSheet.create({
   },
   directionsButtonText: {
     color: "white"
-  },
-  locationListWrapper: {
-    maxHeight: "50%"
   },
   locationList: {
     flexDirection: "row",

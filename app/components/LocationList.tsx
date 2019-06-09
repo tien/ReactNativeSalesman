@@ -1,5 +1,13 @@
 import React, { useContext, useState } from "react";
-import { ScrollView, StyleSheet, Text, TouchableOpacity, View } from "react-native";
+import {
+  ScrollView,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View,
+  StyleProp,
+  ViewStyle
+} from "react-native";
 import Swipeout from "react-native-swipeout";
 
 import { ILocation } from "../contexts";
@@ -10,6 +18,7 @@ export enum LocationListMode {
 }
 
 export interface ILocationListProps {
+  style?: StyleProp<ViewStyle>;
   mode: LocationListMode;
   locations?: ILocation[];
   alreadyAdded?: (location: ILocation) => boolean;
@@ -18,6 +27,7 @@ export interface ILocationListProps {
 }
 
 export function LocationList({
+  style: styleProp,
   mode,
   locations = [],
   alreadyAdded = () => false,
@@ -27,7 +37,7 @@ export function LocationList({
   const [scrollEnabled, setScrollEnabled] = useState(true);
 
   return (
-    <ScrollView style={style.container} scrollEnabled={scrollEnabled}>
+    <ScrollView style={[style.container, styleProp]} scrollEnabled={scrollEnabled}>
       {locations.map(location => {
         const locationAlreadyAdded = alreadyAdded(location);
 
