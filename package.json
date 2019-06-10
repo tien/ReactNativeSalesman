@@ -5,7 +5,7 @@
   "scripts": {
     "start": "node node_modules/react-native/local-cli/cli.js start",
     "preinstall": "rm -rf node_modules/*/.git",
-    "postinstall": "rn-nodeify --install --hack",
+    "postinstall": "./node_modules/.bin/rn-nodeify --install --hack",
     "test": "jest"
   },
   "dependencies": {
